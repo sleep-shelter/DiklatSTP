@@ -1,0 +1,12 @@
+(DONE) * Buat logika agar saat registrasi diklat harus ada kesesuaian bahwa dia telah punya akun dan sedang aktif
+* Buat logika verify Email saat registrasi akun
+(DONE) * Buat logika untuk token saat login akun
+(DONE) * Buat logika untuk kesesuaian kolom password dan konfirmasi password saat daftar akun 
+(DONE) * Buat logika satu akun hanya punya satu data registrasi
+(DONE) * Buat logika login yang mengupdate status akun
+(DONE) * Tambah logika login agar bisa login pakai username/email
+(DONE) * Buat logika logout yang mengupdate status akun dan terakhir login
+(DONE) * Buat agar waktunya berdasarkan zona waktu indonesia(jakarta)
+* Edit user controller agar hanya bisa mengakses data orang yang login saja
+* Buat logika agar bisa login sebagai admin 
+* Buat logika agar data pendaftar dikirim ke email/drive admin (spreedsheet menjadi pilihan lain)   

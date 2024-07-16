@@ -1,0 +1,2 @@
+sequelize-cli migration:generate --name UserMigration
+sequelize-cli db:migrate

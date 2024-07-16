@@ -1,0 +1,62 @@
+#TEST users TABLE
+
+### Tampilkan semua data dari tabel users
+GET http://localhost:5000/users
+Authorization: Bearer 
+
+
+### Tampilkan data tabel users berdasarkan id
+GET http://localhost:5000/users/5
+
+### Menambahkan data ke tabel users
+POST http://localhost:5000/users/
+Content-Type: application/json
+
+{
+    "username": "andi",
+    "email": "andiramli@gmail.com",
+    "password": "123456789",
+    "confPassword": "123456789",
+    "first_name": "Andi",
+    "last_name": "Ramli"
+}
+
+### Mengupdate data dari tabel users berdasarkan id
+PATCH http://localhost:5000/users/5
+Content-Type: application/json
+
+{
+    "username": "andi",
+    "email": "ramlihidayat@gmail.com",
+    "password": "0987654321",
+    "confPassword": "0987654321",
+    "first_name": "Andi",
+    "last_name": "Ramli"
+}
+
+### Hapus data dari tabel users berdasarkan id
+DELETE http://localhost:5000/users/2
+
+### Login WITH USERNAME
+POST http://localhost:5000/login/
+Content-Type: application/json
+
+{
+    "identifier": "yulia",
+    "password": "0987654321"
+}
+
+### Login WITH EMAIL
+POST http://localhost:5000/login/
+Content-Type: application/json
+
+{
+    "identifier": "yulianurazizah@gmail.com",
+    "password": "0987654321"
+}
+
+### REFRESH TOKEN
+GET http://localhost:5000/token
+
+### Logout
+DELETE http://localhost:5000/logout
