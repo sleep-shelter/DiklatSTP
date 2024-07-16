@@ -13,12 +13,12 @@ POST http://localhost:5000/users/
 Content-Type: application/json
 
 {
-    "username": "andi",
-    "email": "andiramli@gmail.com",
+    "username": "devin",
+    "email": "devinadwiyanti98@gmail.com",
     "password": "123456789",
     "confPassword": "123456789",
-    "first_name": "Andi",
-    "last_name": "Ramli"
+    "first_name": "Devin",
+    "last_name": "Dwi"
 }
 
 ### Mengupdate data dari tabel users berdasarkan id
