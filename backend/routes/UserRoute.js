@@ -6,7 +6,6 @@ import {
     updateUser,
     deleteUser,
     Login,
-    verifyEmail,
     Logout
 } from "../controllers/UserController.js";
 import { verifyToken } from "../middleware/VerifyToken.js";
@@ -20,7 +19,6 @@ router.post('/users', createUser);
 router.patch('/users/:id', updateUser);
 router.delete('/users/:id', deleteUser);
 router.post('/login', Login);
-router.get('/verify-email', verifyEmail);
 router.get('/token', refreshToken);
 router.delete('/logout', Logout);
 

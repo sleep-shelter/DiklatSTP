@@ -2,8 +2,6 @@ import User from "../models/UserModel.js";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import { Op } from 'sequelize';
-import { sendVerificationEmail } from '../services/emailService.js';
-import crypto from 'crypto';
 
 export const getUsers = async (req, res) => {
     try {
@@ -34,12 +32,11 @@ export const createUser = async (req, res) => {
 
     if (password !== confPassword) {
         return res.status(400).json({ msg: "Password dan Confirm Password tidak cocok!" });
-    }
+    };
 
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const verificationToken = crypto.randomBytes(32).toString('hex');
 
         await User.create({
             username,
@@ -50,13 +47,11 @@ export const createUser = async (req, res) => {
             verificationToken
         });
 
-        await sendVerificationEmail(email, verificationToken);
-
         res.status(201).json({ msg: "User Created. Please check your email to verify your account" });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ error: error.message });
-    }
+    };
 };
 
 export const updateUser = async (req, res) => {
@@ -149,30 +144,7 @@ export const Login = async (req, res) => {
     } catch (error) {
         console.error("Login error:", error.message);
         res.status(500).json({ msg: "Terjadi kesalahan pada server" });
-    }
-}
-
-export const verifyEmail = async (req, res) => {
-    try {
-        const user = await User.findOne({
-            where: {
-                verificationToken: req.query.token
-            }
-        });
-
-        if (!user) {
-            return res.status(400).json({ msg: "Invalid or expired token." });
-        }
-
-        user.isVerified = true;
-        user.verificationToken = null;
-        await user.save();
-
-        res.status(200).json({ msg: "Email successfully verified." });
-    } catch (error) {
-        console.error("Email verification error:", error.message);
-        res.status(500).json({ msg: "Terjadi kesalahan pada server" });
-    }
+    };
 };
 
 export const Logout = async (req, res) => {
