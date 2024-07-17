@@ -27,11 +27,19 @@ Content-Type: application/json
 
 {
     "username": "andi",
-    "email": "ramlihidayat@gmail.com",
-    "password": "0987654321",
-    "confPassword": "0987654321",
+    "email": "andiramlihidayat@gmail.com",
     "first_name": "Andi",
-    "last_name": "Ramli"
+    "last_name": "Ramli Hidayat"
+}
+
+### Mengupdate password
+PATCH http://localhost:5000/users/5/password
+Content-Type: application/json
+
+{
+    "currentPassword": "123456789",
+    "newPassword": "1234567890",
+    "confNewPassword": "1234567890"
 }
 
 ### Hapus data dari tabel users berdasarkan id

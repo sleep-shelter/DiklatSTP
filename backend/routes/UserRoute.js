@@ -4,6 +4,7 @@ import {
     getUsersById,
     createUser,
     updateUser,
+    updatePassword,
     deleteUser,
     Login,
     verifyEmail,
@@ -18,6 +19,7 @@ router.get('/users', verifyToken, getUsers);
 router.get('/users/:id', getUsersById);
 router.post('/users', createUser);
 router.patch('/users/:id', updateUser);
+router.patch('/users/:id/password', updatePassword);
 router.delete('/users/:id', deleteUser);
 router.post('/login', Login);
 router.get('/verify-email/:token', verifyEmail); // Rute untuk verifikasi email

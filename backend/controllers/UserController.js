@@ -92,20 +92,12 @@ export const createUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-    const { password, confPassword, ...updateData } = req.body;
-
-    if (password && password !== confPassword) {
-        return res.status(400).json({ msg: "Password dan Confirm Password tidak cocok!" });
-    }
+    const { id } = req.params;
+    const updateData = req.body;
 
     try {
-        if (password) {
-            const salt = await bcrypt.genSalt(10);
-            updateData.password = await bcrypt.hash(password, salt);
-        }
-
         await User.update(updateData, {
-            where: { id: req.params.id }
+            where: { id }
         });
 
         res.status(200).json({ msg: "User updated successfully" });
@@ -114,6 +106,42 @@ export const updateUser = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const updatePassword = async (req, res) => {
+    const { id } = req.params;
+    const { currentPassword, newPassword, confNewPassword } = req.body;
+
+    if (newPassword !== confNewPassword) {
+        return res.status(400).json({ msg: "Password baru dan konfirmasi password baru tidak cocok!" });
+    }
+
+    try {
+        const user = await User.findOne({ where: { id } });
+
+        if (!user) {
+            return res.status(404).json({ msg: "User tidak ditemukan" });
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+        if (!isMatch) {
+            return res.status(400).json({ msg: "Password saat ini salah" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        await User.update({ password: hashedPassword }, {
+            where: { id }
+        });
+
+        res.status(200).json({ msg: "Password berhasil diperbarui" });
+    } catch (error) {
+        console.error("Error updating password:", error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 export const deleteUser = async (req, res) => {
     try {
