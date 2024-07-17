@@ -2,6 +2,31 @@ import User from "../models/UserModel.js";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import { Op } from 'sequelize';
+import { sendMail } from '../services/emailService.js'; // Pastikan Anda memiliki service email yang sudah dibuat
+
+const generateEmailToken = (user) => {
+    return jwt.sign({ id: user.id, email: user.email }, process.env.EMAIL_TOKEN_SECRET, { expiresIn: '1d' });
+};
+
+// Fungsi untuk verifikasi email
+export const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const decoded = jwt.verify(token, process.env.EMAIL_TOKEN_SECRET);
+        const user = await User.findOne({ where: { id: decoded.id } });
+
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
+
+        await User.update({ status: true }, { where: { id: user.id } });
+
+        res.status(200).json({ msg: "Email verified successfully" });
+    } catch (error) {
+        res.status(400).json({ msg: "Invalid or expired token" });
+    }
+};
+
 
 export const getUsers = async (req, res) => {
     try {
@@ -37,6 +62,7 @@ export const createUser = async (req, res) => {
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
+        const verificationToken = generateEmailToken({ email });
 
         await User.create({
             username,
