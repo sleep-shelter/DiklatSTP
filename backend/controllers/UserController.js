@@ -6,23 +6,33 @@ import { sendMail } from '../services/emailService.js'; // Pastikan Anda memilik
 
 const generateEmailToken = (user) => {
     return jwt.sign({ id: user.id, email: user.email }, process.env.EMAIL_TOKEN_SECRET, { expiresIn: '1d' });
+    console.log(`Generated token: ${token}`); // Logging untuk debug
+    return token;
 };
 
 // Fungsi untuk verifikasi email
 export const verifyEmail = async (req, res) => {
     try {
         const { token } = req.params;
+        console.log(`Token received: ${token}`); // Logging untuk debug
+
         const decoded = jwt.verify(token, process.env.EMAIL_TOKEN_SECRET);
+        console.log(`Decoded token: ${JSON.stringify(decoded)}`); // Logging untuk debug
+
         const user = await User.findOne({ where: { id: decoded.id } });
+        console.log(`User found: ${JSON.stringify(user)}`); // Logging untuk debug
 
         if (!user) {
+            es.status(404).json({ msg: "User not found" });
             return res.status(404).json({ msg: "User not found" });
         }
 
-        await User.update({ status: true }, { where: { id: user.id } });
+        await User.update({ isVerified: true }, { where: { id: user.id } });
 
+        console.log("Email verified successfully"); // Logging untuk debug
         res.status(200).json({ msg: "Email verified successfully" });
     } catch (error) {
+        console.error("Error during email verification:", error.message); // Logging untuk debug
         res.status(400).json({ msg: "Invalid or expired token" });
     }
 };
@@ -62,16 +72,17 @@ export const createUser = async (req, res) => {
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const verificationToken = generateEmailToken({ email });
 
-        await User.create({
+        const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
             first_name,
             last_name,
-            verificationToken
         });
+
+        const verificationToken = generateEmailToken(newUser);
+        await sendMail(email, verificationToken);
 
         res.status(201).json({ msg: "User Created. Please check your email to verify your account" });
     } catch (error) {

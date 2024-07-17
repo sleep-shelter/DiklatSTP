@@ -15,13 +15,8 @@ const createEmail = (email, token) => {
         from: process.env.MAIL_FROM,
         to: email,
         subject: "Activation Confirmation",
-        html:
-        "<h3>For Activate Account, click link bellow</h3>" +
-        "<a href='" +
-        base_url +
-        "/api/users/activate/" +
-        token +
-        "'>Link Activasi</a>",
+        html: `<h3>For Activate Account, click link below</h3>
+               <a href="${base_url}/verify-email/${token}">Link Activasi</a>`,
     };
 };
 

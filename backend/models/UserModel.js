@@ -50,11 +50,15 @@ const User = db.define('users', {
     },
     status: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true
+        defaultValue: false
     },
     refresh_token: {
         type: DataTypes.TEXT
-    }
+    },
+    isVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
 }, {
     freezeTableName: true,
     timestamps: false,
