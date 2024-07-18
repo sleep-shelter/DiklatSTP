@@ -34,4 +34,29 @@ const sendMail = (email, token) => {
     });
 };
 
-export { sendMail };
+const sendResetPasswordMail = (email, token) => {
+    const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Password Reset Request',
+        html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <h2>Password Reset Request</h2>
+                <p>You have requested a password reset. Please click on the link below to reset your password:</p>
+                <a href="${process.env.base_url}/reset-password/${token}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Reset Password</a>
+                <p>If you did not request a password reset, please ignore this email.</p>
+                <p>Thanks,<br>Your Company</p>
+            </div>
+        `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
+};
+
+export { sendMail, sendResetPasswordMail };

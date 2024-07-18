@@ -2,7 +2,7 @@ import User from "../models/UserModel.js";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import { Op } from 'sequelize';
-import { sendMail } from '../services/emailService.js'; // Pastikan Anda memiliki service email yang sudah dibuat
+import { sendMail, sendResetPasswordMail } from '../services/emailService.js'; // Pastikan Anda memiliki service email yang sudah dibuat
 import { dataValid } from "../validation/dataValidation.js"; // Import dataValid
 
 const generateEmailToken = (user) => {
@@ -297,3 +297,65 @@ export const Logout = async (req, res) => {
     res.clearCookie('refreshToken');
     return res.sendStatus(200);
 }
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { email } });
+
+        if (!user) {
+            return res.status(404).json({ msg: "Email tidak ditemukan" });
+        }
+
+        const resetToken = jwt.sign({ id: user.id, email: user.email }, process.env.RESET_PASSWORD_SECRET, { expiresIn: '1h' });
+
+        await sendResetPasswordMail(email, resetToken);
+
+        res.status(200).json({ msg: "Reset password email sent" });
+    } catch (error) {
+        console.error("Error during password reset request:", error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    const { token } = req.params;
+    const { newPassword, confNewPassword } = req.body;
+
+     // Validasi data
+     const { message, data } = await dataValid(
+        {
+            newPassword: "required,isStrongPassword",
+            confNewPassword: "required"
+        },
+        req.body
+    );
+
+    if (message.length > 0) {
+        return res.status(400).json({ msg: message.join(", ") });
+    }
+
+    if (newPassword !== confNewPassword) {
+        return res.status(400).json({ msg: "Password baru dan konfirmasi password baru tidak cocok!" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.RESET_PASSWORD_SECRET);
+
+        const user = await User.findOne({ where: { id: decoded.id } });
+
+        if (!user) {
+            return res.status(404).json({ msg: "User tidak ditemukan" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        await User.update({ password: hashedPassword }, { where: { id: user.id } });
+
+        res.status(200).json({ msg: "Password berhasil diperbarui" });
+    } catch (error) {
+        console.error("Error resetting password:", error.message);
+        res.status(500).json({ error: error.message });
+    }
+};

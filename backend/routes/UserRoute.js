@@ -8,7 +8,9 @@ import {
     deleteUser,
     Login,
     verifyEmail,
-    Logout
+    Logout,
+    forgotPassword,
+    resetPassword
 } from "../controllers/UserController.js";
 import { verifyToken } from "../middleware/VerifyToken.js";
 import { refreshToken } from "../services/RefreshToken.js";
@@ -25,5 +27,7 @@ router.post('/login', Login);
 router.get('/verify-email/:token', verifyEmail); // Rute untuk verifikasi email
 router.get('/token', refreshToken);
 router.delete('/logout', Logout);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 
 export default router;
