@@ -50,8 +50,8 @@ POST http://localhost:5000/login/
 Content-Type: application/json
 
 {
-    "identifier": "yulia",
-    "password": "0987654321"
+    "identifier": "devin",
+    "password": "123456789"
 }
 
 ### Login WITH EMAIL

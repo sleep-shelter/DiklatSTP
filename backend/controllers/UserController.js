@@ -171,6 +171,10 @@ export const Login = async (req, res) => {
         if (!user) {
             return res.status(404).json({ msg: "Email atau Username tidak ditemukan" });
         }
+        
+        if (!user.isVerified) {
+            return res.status(400).json({ msg: "Akun belum diverifikasi. Silakan periksa email Anda untuk verifikasi akun." });
+        }
 
         const match = await bcrypt.compare(password, user.password);
 
