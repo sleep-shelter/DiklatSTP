@@ -3,11 +3,10 @@ import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import { Op } from 'sequelize';
 import { sendMail } from '../services/emailService.js'; // Pastikan Anda memiliki service email yang sudah dibuat
+import { dataValid } from "../validation/dataValidation.js"; // Import dataValid
 
 const generateEmailToken = (user) => {
     return jwt.sign({ id: user.id, email: user.email }, process.env.EMAIL_TOKEN_SECRET, { expiresIn: '1d' });
-    console.log(`Generated token: ${token}`); // Logging untuk debug
-    return token;
 };
 
 // Fungsi untuk verifikasi email
@@ -65,6 +64,23 @@ export const getUsersById = async (req, res) => {
 export const createUser = async (req, res) => {
     const { username, email, password, confPassword, first_name, last_name } = req.body;
 
+    // Validasi data
+    const { message, data } = await dataValid(
+        {
+            username: "required",
+            email: "required,isEmail",
+            password: "required,isStrongPassword",
+            confPassword: "required",
+            first_name: "required",
+            last_name: "required"
+        },
+        req.body
+    );
+
+    if (message.length > 0) {
+        return res.status(400).json({ msg: message.join(", ") });
+    }
+
     if (password !== confPassword) {
         return res.status(400).json({ msg: "Password dan Confirm Password tidak cocok!" });
     };
@@ -95,6 +111,21 @@ export const updateUser = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
+    // Validasi data
+    const { message, data } = await dataValid(
+        {
+            username: "required",
+            email: "required,isEmail",
+            first_name: "required",
+            last_name: "required"
+        },
+        req.body
+    );
+
+    if (message.length > 0) {
+        return res.status(400).json({ msg: message.join(", ") });
+    }
+
     try {
         await User.update(updateData, {
             where: { id }
@@ -110,6 +141,20 @@ export const updateUser = async (req, res) => {
 export const updatePassword = async (req, res) => {
     const { id } = req.params;
     const { currentPassword, newPassword, confNewPassword } = req.body;
+
+    // Validasi data
+    const { message, data } = await dataValid(
+        {
+            currentPassword: "required",
+            newPassword: "required,isStrongPassword",
+            confNewPassword: "required"
+        },
+        req.body
+    );
+
+    if (message.length > 0) {
+        return res.status(400).json({ msg: message.join(", ") });
+    }
 
     if (newPassword !== confNewPassword) {
         return res.status(400).json({ msg: "Password baru dan konfirmasi password baru tidak cocok!" });
@@ -159,6 +204,20 @@ export const deleteUser = async (req, res) => {
 export const Login = async (req, res) => {
     try {
         const { identifier, password } = req.body; // Menggunakan identifier untuk email atau username
+
+        // Validasi data
+        const { message, data } = await dataValid(
+            {
+                identifier: "required",
+                password: "required"
+            },
+            req.body
+        );
+
+        if (message.length > 0) {
+            return res.status(400).json({ msg: message.join(", ") });
+        }
+
         const user = await User.findOne({
             where: {
                 [Op.or]: [
