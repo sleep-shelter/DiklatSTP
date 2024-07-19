@@ -54,6 +54,15 @@ Content-Type: application/json
     "password": "123456789"
 }
 
+### Login WITH USERNAME
+POST http://localhost:5000/login/
+Content-Type: application/json
+
+{
+    "identifier": "devinadwi",
+    "password": "NewPassword123!"
+}
+
 ### Login WITH EMAIL
 POST http://localhost:5000/login/
 Content-Type: application/json
@@ -68,3 +77,21 @@ GET http://localhost:5000/token
 
 ### Logout
 DELETE http://localhost:5000/logout
+
+### Forgot Password
+POST http://localhost:5000/forgot-password
+Content-Type: application/json
+
+{
+    "email": "devinadwiyanti@mail.ugm.ac.id"
+}
+
+### Reset Password
+POST http://localhost:5000/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJkZXZpbmFkd2l5YW50aUBtYWlsLnVnbS5hYy5pZCIsImlhdCI6MTcyMTM2MDAyMywiZXhwIjoxNzIxMzYzNjIzfQ.5dbJvIhpxSDonK8qFBjL2q68WdeAjeQNyWF4-0RXIwk
+Content-Type: application/json
+
+{
+    "newPassword": "NewPassword123!",
+    "confNewPassword": "NewPassword123!"
+}
+
