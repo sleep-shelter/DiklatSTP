@@ -37,6 +37,30 @@ export const verifyEmail = async (req, res) => {
     }
 };
 
+// Fungsi untuk mengirim ulang email verifikasi
+export const resendVerificationEmail = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { email } });
+
+        if (!user) {
+            return res.status(404).json({ msg: "Email tidak ditemukan" });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ msg: "Akun sudah diverifikasi" });
+        }
+
+        const emailToken = generateEmailToken(user);
+        await sendMail(email, emailToken);
+
+        res.status(200).json({ msg: "Email verifikasi ulang telah dikirim" });
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
 // Fungsi untuk mendapatkan semua pengguna
 export const getUsers = async (req, res) => {
     try {

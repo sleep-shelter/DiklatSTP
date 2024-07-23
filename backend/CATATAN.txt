@@ -11,7 +11,7 @@
 (DONE) * Middleware untuk membedakan hak akses user dan admin
 (DONE) * Buat logika lupa password
 (DONE) * Sembunyikan data2 sensitif (refreshtoken dan password)
-* Menambah logika untuk pengiriman ulang verify email
+(BLUM DICOBA) * Menambah logika untuk pengiriman ulang verify email
 (DONE) * Rapikan format email agar jadi bahasa indonesia
 (DONE) * Buat logika menyamakan password sebelumnya ketika akan ganti password (jadi dipisah fungsi update data dan update password)
 (DONE) * Buat logika untuk memastikan emailnya benar ada
