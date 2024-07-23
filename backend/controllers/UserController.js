@@ -42,7 +42,7 @@ export const getUsers = async (req, res) => {
     try {
         // Middleware akan memastikan hanya admin yang bisa mengakses endpoint ini
         const response = await User.findAll({
-            attributes: ['id', 'username', 'email', 'first_name', 'last_name']
+            attributes: ['id', 'username', 'email', 'first_name', 'last_name', 'role']
         });
         res.status(200).json(response);
     } catch (error) {
@@ -55,6 +55,7 @@ export const getUsersById = async (req, res) => {
     try {
         const userId = req.user.userId; // Ambil userId dari token yang terverifikasi
         const response = await User.findOne({
+            attributes: ['id', 'username', 'email', 'first_name', 'last_name', 'role'],
             where: {
                 id: userId
             }
