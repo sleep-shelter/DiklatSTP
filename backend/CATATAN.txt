@@ -8,10 +8,11 @@
 (DONE) * Buat logika logout yang mengupdate status akun dan terakhir login
 (DONE) * Buat agar waktunya berdasarkan zona waktu indonesia(jakarta)
 (DONE) * Buat logika yg login harus sudah verified emailnya
-* Edit user controller agar hanya bisa mengakses data orang yang login saja
-* Buat logika agar bisa login sebagai admin 
+(DONE) * Middleware untuk membedakan hak akses user dan admin
 (DONE) * Buat logika lupa password
+* Sembunyikan data2 sensitif (refreshtoken dan password)
 * Menambah logika untuk pengiriman ulang verify email
+(DONE) * Rapikan format email agar jadi bahasa indonesia
 (DONE) * Buat logika menyamakan password sebelumnya ketika akan ganti password (jadi dipisah fungsi update data dan update password)
 (DONE) * Buat logika untuk memastikan emailnya benar ada
 * Buat logika agar data pendaftar dikirim ke email/drive admin (spreedsheet menjadi pilihan lain) 

@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { sendMail, sendResetPasswordMail } from '../services/emailService.js'; // Pastikan Anda memiliki service email yang sudah dibuat
 import { dataValid } from "../validation/dataValidation.js"; // Import dataValid
 
+// Fungsi untuk menghasilkan token verifikasi email
 const generateEmailToken = (user) => {
     return jwt.sign({ id: user.id, email: user.email }, process.env.EMAIL_TOKEN_SECRET, { expiresIn: '1d' });
 };
@@ -22,23 +23,24 @@ export const verifyEmail = async (req, res) => {
         console.log(`User found: ${JSON.stringify(user)}`); // Logging untuk debug
 
         if (!user) {
-            es.status(404).json({ msg: "User not found" });
-            return res.status(404).json({ msg: "User not found" });
+            es.status(404).json({ msg: "Pengguna tidak ditemukan" });
+            return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
         }
 
         await User.update({ isVerified: true }, { where: { id: user.id } });
 
-        console.log("Email verified successfully"); // Logging untuk debug
-        res.status(200).json({ msg: "Email verified successfully" });
+        console.log("Email berhasil diverifikasi"); // Logging untuk debug
+        res.status(200).json({ msg: "Email berhasil diverifikasi" });
     } catch (error) {
         console.error("Error during email verification:", error.message); // Logging untuk debug
-        res.status(400).json({ msg: "Invalid or expired token" });
+        res.status(400).json({ msg: "Token tidak valid atau sudah kadaluwarsa" });
     }
 };
 
-
+// Fungsi untuk mendapatkan semua pengguna
 export const getUsers = async (req, res) => {
     try {
+        // Middleware akan memastikan hanya admin yang bisa mengakses endpoint ini
         const response = await User.findAll({
             attributes: ['id', 'username', 'email', 'first_name', 'last_name']
         });
@@ -46,21 +48,24 @@ export const getUsers = async (req, res) => {
     } catch (error) {
         console.log(error.message);
     }
-}
+};
 
+// Fungsi untuk mendapatkan pengguna berdasarkan ID
 export const getUsersById = async (req, res) => {
     try {
+        const userId = req.user.userId; // Ambil userId dari token yang terverifikasi
         const response = await User.findOne({
             where: {
-                id: req.params.id
+                id: userId
             }
         });
         res.status(200).json(response);
     } catch (error) {
-        console.log(error.message);
+        res.status(500).json({ error: error.message });
     }
-}
+};
 
+// Fungsi untuk membuat pengguna baru
 export const createUser = async (req, res) => {
     const { username, email, password, confPassword, first_name, last_name } = req.body;
 
@@ -100,13 +105,14 @@ export const createUser = async (req, res) => {
         const verificationToken = generateEmailToken(newUser);
         await sendMail(email, verificationToken);
 
-        res.status(201).json({ msg: "User Created. Please check your email to verify your account" });
+        res.status(201).json({ msg: "Pengguna dibuat. Silakan periksa email Anda untuk verifikasi akun" });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ error: error.message });
     };
 };
 
+// Fungsi untuk memperbarui data pengguna
 export const updateUser = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
@@ -127,17 +133,23 @@ export const updateUser = async (req, res) => {
     }
 
     try {
+        const userId = req.user.userId; // Ambil userId dari token yang terverifikasi
+        if (parseInt(id) !== userId) {
+            return res.status(403).json({ msg: "Akses terlarang" });
+        }
+
         await User.update(updateData, {
-            where: { id }
+            where: { id: userId }
         });
 
-        res.status(200).json({ msg: "User updated successfully" });
+        res.status(200).json({ msg: "Pengguna berhasil diperbarui" });
     } catch (error) {
-        console.error("Error updating user:", error.message);
         res.status(500).json({ error: error.message });
     }
 };
 
+
+// Fungsi untuk memperbarui password pengguna
 export const updatePassword = async (req, res) => {
     const { id } = req.params;
     const { currentPassword, newPassword, confNewPassword } = req.body;
@@ -187,7 +199,7 @@ export const updatePassword = async (req, res) => {
     }
 };
 
-
+// Fungsi untuk menghapus pengguna
 export const deleteUser = async (req, res) => {
     try {
         await User.destroy({
@@ -195,12 +207,13 @@ export const deleteUser = async (req, res) => {
                 id: req.params.id
             }
         });
-        res.status(201).json({ msg: "User Deleted" });
+        res.status(201).json({ msg: "Pengguna dihapus" });
     } catch (error) {
         console.log(error.message);
     }
 }
 
+// Fungsi untuk login pengguna
 export const Login = async (req, res) => {
     try {
         const { identifier, password } = req.body; // Menggunakan identifier untuk email atau username
@@ -275,28 +288,36 @@ export const Login = async (req, res) => {
     };
 };
 
+// Fungsi untuk logout pengguna
 export const Logout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) return res.sendStatus(204);
+
     const user = await User.findOne({
         where: {
             refresh_token: refreshToken
         }
     });
+
     if (!user) return res.sendStatus(204);
+
     const userId = user.id;
     await User.update({
         refresh_token: null,
-        status: false, // Update status to false
-        last_login: new Date() // Set the last login time
+        status: false,
+        last_login: new Date()
     }, {
         where: {
             id: userId
         }
     });
+
+    // Menghapus cookie refresh token
     res.clearCookie('refreshToken');
-    return res.sendStatus(200);
-}
+    res.status(200).json({ msg: "Berhasil logout" });
+};
+
+// Fungsi untuk meminta reset password
 export const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
@@ -318,6 +339,7 @@ export const forgotPassword = async (req, res) => {
     }
 };
 
+// Fungsi untuk mereset password pengguna
 export const resetPassword = async (req, res) => {
     const { token } = req.params;
     const { newPassword, confNewPassword } = req.body;

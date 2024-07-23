@@ -14,9 +14,13 @@ const createEmail = (email, token) => {
     return {
         from: process.env.MAIL_FROM,
         to: email,
-        subject: "Activation Confirmation",
-        html: `<h3>For Activate Account, click link below</h3>
-               <a href="${base_url}/verify-email/${token}">Link Activasi</a>`,
+        subject: "Konfirmasi Email",
+        html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <h2>Konfirmasi Email</h2>
+                <p>Untuk mengaktifkan akun, klik link di bawah: </p>
+                <a href="${base_url}/verify-email/${token}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Aktifkan Akun</a>
+               `,
     };
 };
 
@@ -38,14 +42,14 @@ const sendResetPasswordMail = (email, token) => {
     const mailOptions = {
         from: process.env.EMAIL,
         to: email,
-        subject: 'Password Reset Request',
+        subject: 'Permintaan Ubah Password',
         html: `
             <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-                <h2>Password Reset Request</h2>
-                <p>You have requested a password reset. Please click on the link below to reset your password:</p>
-                <a href="${process.env.base_url}/reset-password/${token}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Reset Password</a>
-                <p>If you did not request a password reset, please ignore this email.</p>
-                <p>Thanks,<br>Your Company</p>
+                <h2>Permintaan Ubah Password</h2>
+                <p>Anda meminta layanan pengubahan password. Klik link di bawah untuk mengubah password</p>
+                <a href="${base_url}/reset-password/${token}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Reset Password</a>
+                <p>Jika ini bukan permintaan anda, abaikan email</p>
+                <p>Terima Kasih, <br>Solo Techno Park</p>
             </div>
         `
     };

@@ -7,27 +7,32 @@ import {
     updatePassword,
     deleteUser,
     Login,
-    verifyEmail,
     Logout,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    verifyEmail
 } from "../controllers/UserController.js";
-import { verifyToken } from "../middleware/VerifyToken.js";
+import { verifyToken, adminOnly, isUserOrAdmin } from '../middleware/auth.js';
 import { refreshToken } from "../services/RefreshToken.js";
 
 const router = express.Router();
 
-router.get('/users', verifyToken, getUsers);
-router.get('/users/:id', getUsersById);
+router.get('/users', verifyToken, adminOnly, getUsers);
+router.get('/users/:id', verifyToken, isUserOrAdmin, getUsersById);
 router.post('/users', createUser);
-router.patch('/users/:id', updateUser);
-router.patch('/users/:id/password', updatePassword);
-router.delete('/users/:id', deleteUser);
+router.put('/users/:id', verifyToken, isUserOrAdmin, updateUser);
+router.delete('/users/:id', verifyToken, adminOnly, deleteUser);
+router.put('/users/update-password/:id', verifyToken, isUserOrAdmin, updatePassword);
+
 router.post('/login', Login);
-router.get('/verify-email/:token', verifyEmail); // Rute untuk verifikasi email
-router.get('/token', refreshToken);
-router.delete('/logout', Logout);
+router.post('/logout', Logout); // Logout harus terautentikasi untuk mengetahui siapa yang logout
+
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
+
+router.post('/refresh-token', refreshToken);
+
+router.get('/verify-email/:token', verifyEmail);
+
 
 export default router;
