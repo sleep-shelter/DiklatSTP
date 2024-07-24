@@ -15,4 +15,6 @@
 (DONE) * Rapikan format email agar jadi bahasa indonesia
 (DONE) * Buat logika menyamakan password sebelumnya ketika akan ganti password (jadi dipisah fungsi update data dan update password)
 (DONE) * Buat logika untuk memastikan emailnya benar ada
-* Buat logika agar data pendaftar dikirim ke email/drive admin (spreedsheet menjadi pilihan lain) 
+(DONE) * Buat logika agar data pendaftar dikirim ke drive admin 
+* Rapikan hasil pdf nya
+* Buat data spreedsheet nya kalo keburu

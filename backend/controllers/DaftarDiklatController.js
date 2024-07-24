@@ -1,5 +1,7 @@
 import DaftarDiklat from '../models/DaftarDiklatModel.js';
 import User from "../models/UserModel.js";
+import { createDiklatPDF } from '../services/pdfService.js';
+import { uploadToGoogleDrive } from '../services/googleDriveService.js';
 
 export const getPendaftar = async(req, res) => {
     try {
@@ -80,6 +82,10 @@ export const registerDiklat = async (req, res) => {
             tau_diklat_dari,
             tau_diklat_dari_lainnya
         });
+
+        const pdfBytes = await createDiklatPDF(req.body);
+        const fileName = `${nama}_Diklat_Registration.pdf`;
+        await uploadToGoogleDrive(pdfBytes, fileName);
 
         res.status(201).json({ msg: "Registrasi diklat berhasil" });
     } catch (error) {
