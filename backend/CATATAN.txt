@@ -16,5 +16,7 @@
 (DONE) * Buat logika menyamakan password sebelumnya ketika akan ganti password (jadi dipisah fungsi update data dan update password)
 (DONE) * Buat logika untuk memastikan emailnya benar ada
 (DONE) * Buat logika agar data pendaftar dikirim ke drive admin 
-* Rapikan hasil pdf nya
+(DONE) * Rapikan hasil pdf nya
+* Implementasikan validation data untuk daftar diklat
+* Buat logika otomatis logout ketika sudah lebih dari 30 menit tidak ada kegiatan dari user 
 * Buat data spreedsheet nya kalo keburu

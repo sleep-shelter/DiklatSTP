@@ -1,35 +1,70 @@
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 const createDiklatPDF = async (data) => {
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 600]);
-    const { nama, tempat_lahir, tanggal_lahir, nik, usia, jenis_kelamin, status, alamat_rumah, asal_sekolah_instansi, no_wa_aktif, no_telepon_orang_tua, jalur_pendaftaran, jalur_pendaftaran_lainnya, jenis_diklat, tau_diklat_dari, tau_diklat_dari_lainnya } = data;
+    const page = pdfDoc.addPage([595.28, 841.89]); // Ukuran A4 dalam poin
+    const { width, height } = page.getSize();
+    const fontSize = 14;
+    const lineHeight = 20;
+    const margin = 85.04; // 3 cm dalam poin
 
-    const textContent = `
-        Nama: ${nama}
-        Tempat Lahir: ${tempat_lahir}
-        Tanggal Lahir: ${tanggal_lahir}
-        NIK: ${nik}
-        Usia: ${usia}
-        Jenis Kelamin: ${jenis_kelamin}
-        Status: ${status}
-        Alamat Rumah: ${alamat_rumah}
-        Asal Sekolah/Instansi: ${asal_sekolah_instansi}
-        No WA Aktif: ${no_wa_aktif}
-        No Telepon Orang Tua: ${no_telepon_orang_tua}
-        Jalur Pendaftaran: ${jalur_pendaftaran}
-        Jalur Pendaftaran Lainnya: ${jalur_pendaftaran_lainnya}
-        Jenis Diklat: ${jenis_diklat}
-        Tahu Diklat Dari: ${tau_diklat_dari}
-        Tahu Diklat Dari Lainnya: ${tau_diklat_dari_lainnya}
-    `;
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const headerFontSize = 22;
 
-    page.drawText(textContent, {
-        x: 50,
-        y: 500,
-        size: 12,
-        color: rgb(0, 0, 0)
+    // Judul
+    const title = "Pendaftaran Diklat STP";
+    page.drawText(title, {
+        x: (width - timesRomanFont.widthOfTextAtSize(title, headerFontSize)) / 2,
+        y: height - margin,
+        size: headerFontSize,
+        font: timesRomanFont,
+        color: rgb(0, 0, 0),
     });
+
+    // Data pendaftar
+    const fields = [
+        { label: "Nama", value: data.nama },
+        { label: "Tempat Lahir", value: data.tempat_lahir },
+        { label: "Tanggal Lahir", value: data.tanggal_lahir },
+        { label: "NIK", value: data.nik },
+        { label: "Usia", value: data.usia },
+        { label: "Jenis Kelamin", value: data.jenis_kelamin },
+        { label: "Status", value: data.status },
+        { label: "Alamat Rumah", value: data.alamat_rumah },
+        { label: "Asal Sekolah/Instansi", value: data.asal_sekolah_instansi },
+        { label: "No WA Aktif", value: data.no_wa_aktif },
+        { label: "No Telepon Orang Tua", value: data.no_telepon_orang_tua },
+        { label: "Jalur Pendaftaran", value: data.jalur_pendaftaran },
+        { label: "Jalur Pendaftaran Lainnya", value: data.jalur_pendaftaran_lainnya },
+        { label: "Jenis Diklat", value: data.jenis_diklat },
+        { label: "Tahu Diklat Dari", value: data.tau_diklat_dari },
+        { label: "Tahu Diklat Dari Lainnya", value: data.tau_diklat_dari_lainnya }
+    ];
+
+    let y = height - margin - 60;
+
+    const maxLabelWidth = Math.max(...fields.map(field => timesRomanFont.widthOfTextAtSize(field.label, fontSize)));
+    const valueX = margin + maxLabelWidth + 10;
+
+    for (const field of fields) {
+        const value = field.value != null && field.value !== "" ? String(field.value) : '-';
+        page.drawText(`${field.label}:`, {
+            x: margin,
+            y,
+            size: fontSize,
+            font: timesRomanFont,
+            color: rgb(0, 0, 0)
+        });
+        page.drawText(value, {
+            x: valueX,
+            y,
+            size: fontSize,
+            font: timesRomanFont,
+            color: rgb(0, 0, 0)
+        });
+
+        y -= lineHeight;
+    }
 
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
