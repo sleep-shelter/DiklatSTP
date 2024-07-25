@@ -243,8 +243,8 @@ export const Login = async (req, res) => {
     try {
         const { identifier, password } = req.body; // Menggunakan identifier untuk email atau username
 
-        // Validasi data
-        const { message, data } = await dataValid(
+        // Validasi input
+        const { message } = await dataValid(
             {
                 identifier: "required",
                 password: "required"
@@ -256,6 +256,7 @@ export const Login = async (req, res) => {
             return res.status(400).json({ msg: message.join(", ") });
         }
 
+        // Temukan pengguna berdasarkan email atau username
         const user = await User.findOne({
             where: {
                 [Op.or]: [
@@ -268,17 +269,28 @@ export const Login = async (req, res) => {
         if (!user) {
             return res.status(404).json({ msg: "Email atau Username tidak ditemukan" });
         }
-        
+
+        // Cek apakah akun telah diverifikasi
         if (!user.isVerified) {
             return res.status(400).json({ msg: "Akun belum diverifikasi. Silakan periksa email Anda untuk verifikasi akun." });
         }
 
+        // Periksa apakah pengguna tidak aktif lebih dari 30 menit
+        const thirtyMinutesAgo = new Date(new Date() - 30 * 60 * 1000);
+        if (user.last_active && user.last_active < thirtyMinutesAgo) {
+            // Logout otomatis jika sudah lebih dari 30 menit
+            await User.update({ refresh_token: null, status: false }, { where: { id: user.id } });
+            return res.status(400).json({ msg: "Akun telah logout otomatis karena tidak aktif lebih dari 30 menit" });
+        }
+
+        // Periksa password
         const match = await bcrypt.compare(password, user.password);
 
         if (!match) {
             return res.status(400).json({ msg: "Password salah" });
         }
 
+        // Generate token
         const userId = user.id;
         const username = user.username;
         const email = user.email;
@@ -291,26 +303,30 @@ export const Login = async (req, res) => {
             expiresIn: '1d'
         });
 
+        // Update data pengguna
         await User.update({
             refresh_token: refreshToken,
             status: true, // Update status to true
-            last_login: new Date() // Set the last login time
+            last_login: new Date(), // Set the last login time
+            last_active: new Date() // Update last active time
         }, {
             where: {
                 id: userId
             }
         });
 
+        // Kirimkan token refresh dalam cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
+        // Kirimkan token akses sebagai respons
         res.json({ accessToken });
     } catch (error) {
         console.error("Login error:", error.message);
         res.status(500).json({ msg: "Terjadi kesalahan pada server" });
-    };
+    }
 };
 
 // Fungsi untuk logout pengguna

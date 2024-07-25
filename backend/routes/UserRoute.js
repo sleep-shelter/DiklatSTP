@@ -13,17 +13,17 @@ import {
     verifyEmail,
     resendVerificationEmail
 } from "../controllers/UserController.js";
-import { verifyToken, adminOnly, isUserOrAdmin } from '../middleware/auth.js';
+import { verifyToken, adminOnly, isUserOrAdmin, updateLastActive } from '../middleware/auth.js';
 import { refreshToken } from "../services/RefreshToken.js";
 
 const router = express.Router();
 
-router.get('/users', verifyToken, adminOnly, getUsers);
-router.get('/users/:id', verifyToken, isUserOrAdmin, getUsersById);
+router.get('/users', verifyToken, updateLastActive, adminOnly, getUsers);
+router.get('/users/:id', verifyToken, updateLastActive, isUserOrAdmin, getUsersById);
 router.post('/users', createUser);
-router.put('/users/:id', verifyToken, isUserOrAdmin, updateUser);
-router.delete('/users/:id', verifyToken, adminOnly, deleteUser);
-router.put('/users/update-password/:id', verifyToken, isUserOrAdmin, updatePassword);
+router.put('/users/:id', verifyToken, updateLastActive, isUserOrAdmin, updateUser);
+router.delete('/users/:id', verifyToken, updateLastActive, adminOnly, deleteUser);
+router.put('/users/update-password/:id', verifyToken, updateLastActive, isUserOrAdmin, updatePassword);
 router.post('/resend-verification-email', resendVerificationEmail); // Endpoint baru
 
 router.post('/login', Login);

@@ -40,3 +40,18 @@ export const isUserOrAdmin = async (req, res, next) => {
         res.status(500).json({ msg: "Terjadi kesalahan pada server" });
     }
 };
+
+export const updateLastActive = async (req, res, next) => {
+    try {
+        const userId = req.user.userId; // Ambil userId dari token yang terverifikasi
+
+        await User.update({ last_active: new Date() }, {
+            where: { id: userId }
+        });
+
+        next();
+    } catch (error) {
+        console.error("Error updating last active:", error.message);
+        res.status(500).json({ msg: "Terjadi kesalahan pada server" });
+    }
+};

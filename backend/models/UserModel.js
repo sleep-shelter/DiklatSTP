@@ -59,6 +59,10 @@ const User = db.define('users', {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
+    last_active: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
 }, {
     freezeTableName: true,
     timestamps: false,
