@@ -18,5 +18,5 @@
 (DONE) * Buat logika agar data pendaftar dikirim ke drive admin 
 (DONE) * Rapikan hasil pdf nya
 * Implementasikan validation data untuk daftar diklat
-* Buat logika otomatis logout ketika sudah lebih dari 30 menit tidak ada kegiatan dari user 
+(DONE) * Buat logika otomatis logout ketika sudah lebih dari 30 menit tidak ada kegiatan dari user 
 * Buat data spreedsheet nya kalo keburu

@@ -275,14 +275,6 @@ export const Login = async (req, res) => {
             return res.status(400).json({ msg: "Akun belum diverifikasi. Silakan periksa email Anda untuk verifikasi akun." });
         }
 
-        // Periksa apakah pengguna tidak aktif lebih dari 30 menit
-        const thirtyMinutesAgo = new Date(new Date() - 30 * 60 * 1000);
-        if (user.last_active && user.last_active < thirtyMinutesAgo) {
-            // Logout otomatis jika sudah lebih dari 30 menit
-            await User.update({ refresh_token: null, status: false }, { where: { id: user.id } });
-            return res.status(400).json({ msg: "Akun telah logout otomatis karena tidak aktif lebih dari 30 menit" });
-        }
-
         // Periksa password
         const match = await bcrypt.compare(password, user.password);
 

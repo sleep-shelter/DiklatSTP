@@ -104,6 +104,7 @@ POST http://localhost:5000/refresh-token
 
 ### Logout
 POST http://localhost:5000/logout
+Authorization: Bearer 
 
 ### Forgot Password
 POST http://localhost:5000/forgot-password
