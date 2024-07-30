@@ -67,7 +67,7 @@ const createDiklatPDF = async (data) => {
     }
 
     const pdfBytes = await pdfDoc.save();
-    return pdfBytes;
+    return Buffer.from(pdfBytes); // Pastikan buffer dikembalikan
 };
 
 export { createDiklatPDF };

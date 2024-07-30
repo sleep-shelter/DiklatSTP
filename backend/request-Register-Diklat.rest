@@ -30,6 +30,31 @@ Content-Type: application/json
     "tau_diklat_dari_lainnya": ""
 }
 
+### Menambahkan data ke tabel daftardiklat
+POST http://localhost:5000/daftar-diklat/
+Content-Type: application/json
+
+{
+    "id_user": 44,
+    "nama": "Destiandira Rakhadian",
+    "tempat_lahir": "Cimahi",
+    "tanggal_lahir": "2003-01-01",
+    "nik": "1234567890123456",
+    "usia": 21,
+    "jenis_kelamin": "Perempuan",
+    "status": "Belum Menikah",
+    "alamat_rumah": "Jl. Katumiri",
+    "asal_sekolah_instansi": "Universitas Gadjah Mada",
+    "no_wa_aktif": "081234567890",
+    "no_telepon_orang_tua": "081234567891",
+    "jalur_pendaftaran": "Yang Lain",
+    "jalur_pendaftaran_lainnya": "Orang Dalam",
+    "jenis_diklat": ["Mekanik Manufaktur", "Otomasi Manufaktur"],
+    "tau_diklat_dari": "Website",
+    "tau_diklat_dari_lainnya": ""
+}
+
+
 ### Mengupdate data dari tabel daftardiklat berdasarkan id
 PATCH http://localhost:5000/daftar-diklat/3
 Content-Type: application/json
